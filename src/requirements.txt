@@ -1,0 +1,18 @@
+skorch
+torchinfo
+torchvision
+numpy
+nltk
+h5py
+six
+rdkit-pypi
+pandas
+matplotlib
+pymongo
+python-dotenv
+openbabel-wheel
+pyarrow
+tensorboard
+
+# --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu102
+torch
