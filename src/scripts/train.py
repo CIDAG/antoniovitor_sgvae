@@ -33,8 +33,8 @@ def calc_sets_splits_sizes(length, proportions: list):
 """
 Creates a DataLoader which loads batches from dataset instead of a item
 """
-def create_dataloader(dataset, device = 'cpu'):
-    batch_sampler = BatchSampler(RandomSampler(range(len(dataset))), batch_size=64, drop_last=True)
+def create_dataloader(dataset, batch_size = 64):
+    batch_sampler = BatchSampler(RandomSampler(range(len(dataset))), batch_size=batch_size, drop_last=True)
     loader = DataLoader(
         dataset, sampler=batch_sampler, num_workers=num_workers, pin_memory=True,
         collate_fn=lambda x : tuple(torch.Tensor(i) for i in x[0])
@@ -46,7 +46,7 @@ def create_registries(save_dir, name):
     csv_registry = CSVRegistry(save_dir / f'{name}.vae.csv')
     return CombineRegistry([file_registry, csv_registry])
 
-def run(dataset_name):
+def run(dataset_name, batch_size):
     print('Starting training...\n')
 
     # PARAMETERS
@@ -76,7 +76,7 @@ def run(dataset_name):
 
     # DATASET
     dataset = ProcessedDataset(dataset_name)
-    properties = dataset.info['properties']
+    properties = dataset.info['properties_fields']
     dataset.set_transform(
         SGVAEDataFormatter(input_field='smiles', output_field='smiles', properties=properties)
     )
@@ -120,7 +120,7 @@ def run(dataset_name):
         for x_input, x_output, label_0, label_1 in train_loader:
             optimizer.zero_grad()
 
-            # TODO: remove data transfer after setup dataloader to do this job
+            # TODO: remove data transfer after setup dataloader set device
             x_input = x_input.to(device)
             x_output = x_output.to(device)
             label_0 = label_0.to(device)
@@ -167,12 +167,12 @@ def run(dataset_name):
 
 
         # VALIDATION
-        sgvae.eval()
         validation_logs = {
             'elbo': 0, 'kl': 0, 'reconstruction_error': 0,
             f'mae_{properties[0]}': 0, f'mae_{properties[1]}': 0,
         }
 
+        sgvae.eval()
         with torch.no_grad():
             for x_input, x_output, label_0, label_1 in validation_loader:
                 # TODO: remove data transfer after setup dataloader to do this job
@@ -207,11 +207,11 @@ def run(dataset_name):
                 validation_logs[f'mae_{properties[1]}'] += property_error_1.item()
 
         # CaLCULATE LOGS MEAN'S
-        validation_logs['elbo'] /= len(train_loader)
-        validation_logs['kl'] /= len(train_loader)
-        validation_logs['reconstruction_error'] /= len(train_loader)
-        validation_logs[f'mae_{properties[0]}'] /= len(train_loader)
-        validation_logs[f'mae_{properties[1]}'] /= len(train_loader)
+        validation_logs['elbo'] /= len(validation_loader)
+        validation_logs['kl'] /= len(validation_loader)
+        validation_logs['reconstruction_error'] /= len(validation_loader)
+        validation_logs[f'mae_{properties[0]}'] /= len(validation_loader)
+        validation_logs[f'mae_{properties[1]}'] /= len(validation_loader)
 
         validation_loss = validation_logs['elbo']
 

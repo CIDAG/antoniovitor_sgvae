@@ -16,6 +16,10 @@ def cli(): pass
     prompt='Dataset name',
     required=True,
 )
+@click.option(
+    '--batch_size',
+    type=click.INT,
+)
 def train_command(**kargs):
     from scripts import train
     train.run(**kargs)
