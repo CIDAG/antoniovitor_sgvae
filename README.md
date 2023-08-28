@@ -6,7 +6,7 @@ run the command:
 ```ssh
 python main.py --help 
 # or
-python main.py preprocess_dataset --help 
+python main.py process_dataset --help 
 # or
 python main.py train --help 
 ```
@@ -18,7 +18,7 @@ to be used as training data, it is possible to execute the following command to
 process the data.
 
 ```ssh
-python main.py preprocess_dataset --path=../datasources/IL_ESW/dataset_complete/anions.csv --dataset_name=il_esw_anions --properties_fields homo-fopt lumo-fopt 
+python main.py process_dataset --path=../datasources/IL_ESW/dataset_complete/anions.csv --dataset_name=il_esw_anions --properties_fields homo-fopt lumo-fopt 
 ```
 
 - `--path` is the path to the CSV file

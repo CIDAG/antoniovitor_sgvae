@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import click
-from scripts import preprocess_dataset
+import bootstrap
+from scripts import process_dataset
 
 @click.group()
 def cli(): pass
@@ -21,7 +22,8 @@ def train_command(**kargs):
 
 
 def main():
-    cli.add_command(preprocess_dataset.run, name='preprocess_dataset')
+    bootstrap.run()
+    cli.add_command(process_dataset.run, name='process_dataset')
     cli()
 
 if __name__ == '__main__':

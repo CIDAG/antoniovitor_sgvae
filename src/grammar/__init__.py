@@ -11,7 +11,6 @@ D = utils.D
 masks = utils.masks
 ind_of_ind = utils.ind_of_ind
 
-
 def parse_smiles(smiles, MAX_LEN, NCHARS):
     """ Encode a list of smiles strings to one-hot vectors """
     assert type(smiles) == list
@@ -33,7 +32,6 @@ def parse_smiles(smiles, MAX_LEN, NCHARS):
 
 
 def parse_smiles_list(smiles_list, verbose=False):
-    params = parameters_parser.load_parameters()
     MAX_LEN = c.max_length
     NCHARS = len(utils.GCFG.productions())
 
