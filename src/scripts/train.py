@@ -128,7 +128,7 @@ def run(dataset_name, batch_size):
 
             # TODO: convert model forwarding and loss calculations into a function
             # TODO: check if transpose operation could be removed
-            x_input = x_input.transpose(1, 2).contiguous()  # [batch, num_rules, max_length]            
+            x_input = x_input.transpose(1, 2).contiguous()  # [batch, num_rules, max_length]
             z, mu, sigma, logits, predictions_0, predictions_1 = sgvae(x_input)
             x_decoded_mean = sgvae.conditional(x_output, logits)
             
@@ -143,10 +143,6 @@ def run(dataset_name, batch_size):
                 kl_divergence * kl_weight +
                 (property_error_0 + property_error_1) * prediction_weight
             )
-            
-            # UPDATE PARAMETERS
-            elbo.backward()
-            optimizer.step()
         
             # ADD ERROR PER BATCH
             train_logs['elbo'] += elbo.item()
@@ -154,6 +150,10 @@ def run(dataset_name, batch_size):
             train_logs['reconstruction_error'] += reconstruction_error.item()
             train_logs[f'mae_{properties[0]}'] += property_error_0.item()
             train_logs[f'mae_{properties[1]}'] += property_error_1.item()
+            
+            # UPDATE PARAMETERS
+            elbo.backward()
+            optimizer.step()
 
         train_logs['elbo'] =                 train_logs['elbo'] / len(train_loader)
         train_logs['kl'] =                   train_logs['kl'] / len(train_loader)

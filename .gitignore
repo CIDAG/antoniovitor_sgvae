@@ -1,6 +1,6 @@
 __pycache__
-datasources/
-datasets/
-gpam_results/
-results/
-venv/
+/datasources/
+/datasets/
+/gpam_results/
+/results/
+/venv/

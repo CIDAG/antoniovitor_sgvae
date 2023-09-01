@@ -19,6 +19,7 @@ def cli(): pass
 @click.option(
     '--batch_size',
     type=click.INT,
+    default=512,
 )
 def train_command(**kargs):
     from scripts import train
