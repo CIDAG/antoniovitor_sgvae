@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, Subset
 from datasource_manager import IL_ESW_Extended_Datasource
 import random
 import pymongo
-import grammar
+import grammar.old_grammar as grammar
 from tqdm import tqdm
 import time
 import constants as c

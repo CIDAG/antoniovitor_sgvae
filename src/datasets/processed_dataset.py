@@ -18,6 +18,9 @@ class ProcessedDataset(Dataset):
     def set_transform(self, transform):
         self.transform=transform
     
+    def to_df(self):
+        return self.df
+    
     def __len__(self):
         return len(self.df.index)
 

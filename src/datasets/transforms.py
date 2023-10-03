@@ -1,4 +1,4 @@
-import grammar
+import grammar.old_grammar as grammar
 import pandas as pd
 import time
 

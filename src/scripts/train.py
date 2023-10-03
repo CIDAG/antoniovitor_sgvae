@@ -1,5 +1,4 @@
 import parameters_parser
-import datasets
 from datasets.processed_dataset import ProcessedDataset
 from datasets.transforms import SGVAEDataFormatter
 from models.sgvae import SGVAE
@@ -33,7 +32,7 @@ def calc_sets_splits_sizes(length, proportions: list):
 """
 Creates a DataLoader which loads batches from dataset instead of a item
 """
-def create_dataloader(dataset, batch_size = 64):
+def create_dataloader(dataset, batch_size):
     batch_sampler = BatchSampler(RandomSampler(range(len(dataset))), batch_size=batch_size, drop_last=True)
     loader = DataLoader(
         dataset, sampler=batch_sampler, num_workers=num_workers, pin_memory=True,
@@ -86,11 +85,18 @@ def run(dataset_name, batch_size):
     sets = random_split(dataset, sets_sizes, generator=Generator().manual_seed(c.seed)) # splits datasets randomly
     test_set, validation_set, train_set = sets
 
-
+    # TODO: extract to class Split
+    for data_set, name in zip(sets, ['test', 'validation', 'train']):
+        print(name)
+        print(data_set.indices[:10])
+        with open(saving_path / f'{name}.indices', 'w') as file:
+            file.write('\n'.join([str(i) for i in data_set.indices]))
+    
+    return
     # DATALOADER's
-    train_loader = create_dataloader(train_set)
-    validation_loader = create_dataloader(validation_set)
-    test_loader = create_dataloader(test_set)
+    train_loader = create_dataloader(train_set, batch_size)
+    validation_loader = create_dataloader(validation_set, batch_size)
+    test_loader = create_dataloader(test_set, batch_size)
 
     # CREATING MODELS AND OPTIMIZERS
     sgvae = SGVAE().to(device)

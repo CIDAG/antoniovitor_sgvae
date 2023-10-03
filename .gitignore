@@ -4,3 +4,5 @@ __pycache__
 /gpam_results/
 /results/
 /venv/
+/executables/
+temp/

@@ -2,6 +2,7 @@
 import click
 import bootstrap
 from scripts import process_dataset
+from scripts import sample
 
 @click.group()
 def cli(): pass
@@ -29,6 +30,7 @@ def train_command(**kargs):
 def main():
     bootstrap.run()
     cli.add_command(process_dataset.run, name='process_dataset')
+    cli.add_command(sample.run, name='sample')
     cli()
 
 if __name__ == '__main__':
