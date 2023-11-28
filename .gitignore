@@ -1,7 +1,7 @@
 __pycache__
 /datasources/
 /datasets/
-/gpam_results/
+gpam_results*
 /results/
 /venv/
 /executables/

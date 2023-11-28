@@ -15,7 +15,7 @@ params = parameters_parser.load_parameters()
 device = params['device']
 
 class SGVAE(torch.nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, properties) -> None:
         super(SGVAE, self).__init__()
 
         # TODO: remove old grammar
@@ -35,25 +35,29 @@ class SGVAE(torch.nn.Module):
         self.encoder = Encoder(input_shape=self.input_shape, output_size=c.latent_size)
         self.decoder = Decoder(input_size=c.latent_size,  output_size=c.num_rules,
                                max_length=c.max_length)
-        self.predictor_0 = PropertyPredictor(input_size=c.latent_size)
-        self.predictor_1 = PropertyPredictor(input_size=c.latent_size)
+        
+        self.properties = properties
+        self.predictors = torch.nn.ModuleDict({
+            prop: PropertyPredictor(input_size=c.latent_size) for prop in self.properties
+        })
     
     def forward(self, x):
         mu, sigma = self.encoder(x)
         z = self.sample(mu, sigma)
         logits = self.decoder(z)
 
-        predictions_0 = self.predictor_0(z)
-        predictions_1 = self.predictor_1(z)
+        predictions = {
+            prop: self.predictors[prop](z) for prop in self.properties
+        }
         
         # returning x to its original dimensions
-        return z, mu, sigma, logits, predictions_0, predictions_1
+        return z, mu, sigma, logits, predictions
 
     def load(self, models_path):
         self.encoder.load_state_dict(torch.load(models_path / 'encoder.pth'))
         self.decoder.load_state_dict(torch.load(models_path / 'decoder.pth'))
-        self.predictor_0.load_state_dict(torch.load(models_path / 'predictor_0.pth'))
-        self.predictor_1.load_state_dict(torch.load(models_path / 'predictor_1.pth'))
+        for prop in self.properties:
+            self.predictors[prop].load_state_dict(torch.load(models_path / f'predictor_{prop}.pth'))
 
     def save(self, folder):
         folder = Path(folder)
@@ -61,8 +65,8 @@ class SGVAE(torch.nn.Module):
 
         torch.save(self.encoder.state_dict(), folder / 'encoder.pth')
         torch.save(self.decoder.state_dict(), folder / 'decoder.pth')
-        torch.save(self.predictor_0.state_dict(), folder / 'predictor_0.pth')
-        torch.save(self.predictor_1.state_dict(), folder / 'predictor_1.pth')
+        for prop in self.properties:
+            torch.save(self.predictors[prop].state_dict(), folder / f'predictor_{prop}.pth')
 
     def sample(self, mu, sigma):
         """Reparametrization trick to sample z"""

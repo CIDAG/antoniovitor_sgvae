@@ -18,5 +18,5 @@ class PropertyPredictor(nn.Module):
             nn.Linear(hidden_size, 1)
         )
 
-    def forward(self, z):
+    def forward(self, z: torch.Tensor):
         return self.feedforward(z)

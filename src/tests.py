@@ -1,19 +1,24 @@
-from utils import smiles_validation
+import pandas as pd
 from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+from grammar import Grammar
 
-base_path = Path('temp')
-charge = None
-existing_smiles = set('C')
-smiles_list = [
-    'C',
-    'CC'
-]
+grammar = Grammar()
 
-results = smiles_validation.validate_smiles_in_batches(
-    smiles_list,
-    existing_smiles,
-    base_path,
-    charge,
-)
 
-print(results)
+base_path = Path('../datasources/electrolyte')
+df = pd.read_csv(base_path / 'dirty_data.csv')
+
+errors = []
+for smi in df['smiles']:
+    try:
+        grammar.parse_smiles_list([smi])
+        errors.append('')
+    except Exception as e:
+        errors.append(str(e))
+        print(smi, ' | ', e)
+
+df['errors'] = errors
+
+df

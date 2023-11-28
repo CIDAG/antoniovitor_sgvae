@@ -18,12 +18,17 @@ to be used as training data, it is possible to execute the following command to
 process the data.
 
 ```ssh
-python main.py process_dataset --path=../datasources/IL_ESW/dataset_complete/anions.csv --dataset_name=il_esw_anions --properties_fields homo-fopt lumo-fopt 
+python main.py process_dataset \
+    --path=../datasources/IL_ESW/dataset_complete/anions.csv \
+    --dataset_name=il_esw_anions \
+    -p homo -p lumo -p viscosity 
 ```
 
-- `--path` is the path to the CSV file
-- `--dataset_name` is the name used to save the dataset. This will be used to reference the dataset in other scripts.
-- `--properties_fields` are the names of the two properties that will be used as target value to the model.
+- `--path`: is the path to the CSV file
+- `--dataset_name`: is the name used to save the dataset. This will be used to reference the dataset in other scripts.
+- `--properties_fields`: are the names of the two properties that will be used as target value to the model.
+- `--ion_type` (optional): type of the ion (anion or cation) presented in the dataset
+- `--num_samples` (optional): number of samples that should be selected. This is the desired final length of the dataset, but other steps of the preprocessing procedure could make the final length smaller than num_samples.
 
 ## Training 
 
@@ -33,4 +38,5 @@ To train a new version, run the following command:
 python main.py train --dataset_name=il_esw_anions
 ```
 
-- `--dataset_name` is the name given to the dataset.
+- `--dataset_name`: is the name given to the dataset.
+- `--batch_size` (optional):  is the size of the batch used during training.

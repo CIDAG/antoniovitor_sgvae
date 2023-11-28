@@ -1,24 +1,19 @@
 import click
-import os
 import math
 import torch
-import pickle
-import argparse
 import numpy as np
 import pandas as pd
 
 from tqdm import tqdm
 from rdkit import RDLogger
 from pathlib import Path
-from utils import smiles_validation, smiles_utils, timer
+from utils import smiles_validation
 from models.sgvae import SGVAE
 import random
-import time
-import json
 import constants as c
 from datasets.processed_dataset import ProcessedDataset
 
-from torch.utils.data import DataLoader, random_split, BatchSampler, RandomSampler
+from torch.utils.data import random_split
 from torch import Generator
 
 
@@ -151,11 +146,11 @@ def run(num_tries, dataset_name, model_path,should_restart, property, target):
         logs_path=logs_path,
     )
 
-    validated_df = pd.DataFrame(results)
-    validated_df.to_pickle(sampling_path / 'validation_results.pkl')
-    validated_df.to_csv(sampling_path / 'validation_results.csv', index=False)
+    results_df = pd.DataFrame(results)
+    results_df.to_pickle(sampling_path / 'validation_results.pkl')
+    results_df.to_csv(sampling_path / 'validation_results.csv', index=False)
 
-    valid_df = validated_df[validated_df['valid'] == True]
+    valid_df = results_df[results_df['valid'] == True]
     valid_df.to_pickle(sampling_path / 'samples.pkl')
     valid_df.to_csv(sampling_path / 'samples.csv', index=False)
 
