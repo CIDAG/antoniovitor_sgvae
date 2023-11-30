@@ -35,6 +35,7 @@ class Encoder(nn.Module):
             kernel_size=self.kernel_3
         )
 
+
         self.linear_size = (
             self.max_length
             - (self.kernel_1 - 1)
@@ -54,7 +55,7 @@ class Encoder(nn.Module):
         h = self.relu(self.conv2(h))
         h = self.relu(self.conv3(h))
         h = torch.transpose(h, 1, 2)  # need to transpose to get the right output
-        h = h.contiguous().view(h.size(0), -1) # flatte
+        h = h.contiguous().view(h.size(0), -1) # flatten
         h = self.relu(self.linear(h))
         
         mu = self.mu(h)

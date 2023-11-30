@@ -1,6 +1,6 @@
 import parameters_parser
 from datasets.processed_dataset import ProcessedDataset
-from datasets.transforms import SGVAEDataFormatter
+from datasets.transforms import SGVAEDataFormatter, TwoSmilesFormatter
 from models.sgvae import SGVAE
 from torch.utils.data import DataLoader, random_split, BatchSampler, RandomSampler
 from torch import Generator
@@ -47,7 +47,7 @@ def create_registries(save_dir, name):
     return CombineRegistry([file_registry, csv_registry])
 
 def run(dataset_name, batch_size):
-    print('[TRAIN] Starting...\n')
+    print('[TRAIN] Starting...')
     
 
     # PARAMETERS
@@ -79,7 +79,7 @@ def run(dataset_name, batch_size):
     dataset = ProcessedDataset(dataset_name)
     properties = dataset.info['properties_fields']
     dataset.set_transform(
-        SGVAEDataFormatter(input_field='smiles', output_field='smiles', properties=properties)
+        TwoSmilesFormatter(input_field='smiles', output_field='smiles', properties=properties)
     )
 
 
@@ -118,7 +118,7 @@ def run(dataset_name, batch_size):
     # EPOCHS
     min_validation_loss = np.inf
     for epoch in range(0, epochs):
-        print(f"epoch: {epoch+1}/{epochs}")
+        print(f"[EPOCH] {epoch+1}/{epochs}")
         start_time = time.perf_counter()
         
         # TRAINING
@@ -242,9 +242,9 @@ def run(dataset_name, batch_size):
         
         scheduler.step(validation_loss)
         epoch_time = time.perf_counter() - start_time
-        print(f'Time: {time.strftime("%H:%M:%S", time.gmtime(epoch_time))}')
-        print(f'Train losses: {train_logs}')
-        print(f'Validation losses: {validation_logs}\n')
+        print(f'\t[INFO] Time: {time.strftime("%H:%M:%S", time.gmtime(epoch_time))}')
+        print(f'\t[INFO] Train losses: {train_logs}')
+        print(f'\t[INFO] Validation losses: {validation_logs}')
     # END EPOCHS
 
     writer.close()

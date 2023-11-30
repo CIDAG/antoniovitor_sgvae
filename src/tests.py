@@ -1,24 +1,25 @@
-import pandas as pd
-from pathlib import Path
-import numpy as np
-import matplotlib.pyplot as plt
-from grammar import Grammar
 
-grammar = Grammar()
+from rdkit import Chem
 
+smiles = 'C'
 
-base_path = Path('../datasources/electrolyte')
-df = pd.read_csv(base_path / 'dirty_data.csv')
+from openbabel import openbabel
 
-errors = []
-for smi in df['smiles']:
-    try:
-        grammar.parse_smiles_list([smi])
-        errors.append('')
-    except Exception as e:
-        errors.append(str(e))
-        print(smi, ' | ', e)
+def smiles_to_sdf(smiles, output_file):
+    # Initialize Open Babel conversion
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("smi", "sdf")
 
-df['errors'] = errors
+    # Create a molecule object
+    mol = openbabel.OBMol()
 
-df
+    # Read the SMILES string
+    if not obConversion.ReadString(mol, smiles):
+        raise ValueError("Invalid SMILES string")
+
+    # Convert and save to SDF format
+    obConversion.WriteFile(mol, output_file)
+
+# Example usage
+output_filename = "output.sdf"
+smiles_to_sdf(smiles, output_filename)

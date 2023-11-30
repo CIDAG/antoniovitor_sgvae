@@ -31,10 +31,11 @@ class SGVAE(torch.nn.Module):
         for ix, lhs in enumerate(self._grammar.lhs_list):
             self._lhs_map[lhs] = ix
 
-        self.input_shape = (c.num_rules, c.max_length)
+        self.max_length = c.max_length*2
+        self.input_shape = (c.num_rules, self.max_length)
         self.encoder = Encoder(input_shape=self.input_shape, output_size=c.latent_size)
         self.decoder = Decoder(input_size=c.latent_size,  output_size=c.num_rules,
-                               max_length=c.max_length)
+                               max_length=self.max_length)
         
         self.properties = properties
         self.predictors = torch.nn.ModuleDict({
@@ -86,7 +87,7 @@ class SGVAE(torch.nn.Module):
         ix2 = ix2.type(torch.LongTensor)
         M2 = grammar.masks[list(ix2.T)]
         # M3 = torch.reshape(M2, (params['batch'], params['max_length'], grammar.D))
-        M3 = torch.reshape(M2, (len(x_true), c.max_length, c.num_rules))
+        M3 = torch.reshape(M2, (len(x_true), self.max_length, c.num_rules))
         P2 = torch.mul(torch.exp(x_pred), M3.float()) # apply them to the exp-predictions
         P2 = torch.divide(P2, torch.sum(P2, dim=-1, keepdims=True)) # normalize predictions
         return P2

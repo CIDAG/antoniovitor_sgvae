@@ -1,5 +1,4 @@
-rules = """
-smiles -> chain
+rules = """smiles -> chain
 atom -> bracket_atom
 atom -> aliphatic_organic
 atom -> aromatic_organic
@@ -69,5 +68,4 @@ branch -> '(' bond chain ')'
 chain -> branched_atom
 chain -> chain branched_atom
 chain -> chain bond branched_atom
-Nothing -> None
-"""
+Nothing -> None"""
